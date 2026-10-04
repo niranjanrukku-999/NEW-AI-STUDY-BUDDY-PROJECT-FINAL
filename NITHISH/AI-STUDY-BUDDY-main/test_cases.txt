@@ -1,0 +1,1 @@
+1. App opens. 2. Tasks add. 3. Quiz scores. 4. Notes save. 5. Assistant responds. 6. Responsive layout.

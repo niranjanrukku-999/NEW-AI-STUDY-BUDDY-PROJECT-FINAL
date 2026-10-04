@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI StudyBuddy | Smart Learning Assistant</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,Segoe UI,Arial,sans-serif;background:#f5f7fb;color:#18212f;line-height:1.5}
+    button,input,textarea,select{font:inherit}
+    .app{min-height:100vh;display:flex}
+    .sidebar{width:245px;background:#101828;color:#fff;padding:24px 16px;position:fixed;left:0;top:0;bottom:0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px;margin-bottom:34px}
+    .brand-icon{width:38px;height:38px;border-radius:12px;background:#4f7cff;display:grid;place-items:center;font-size:20px}
+    .nav{display:grid;gap:8px}
+    .nav button{border:0;background:transparent;color:#b8c2d1;text-align:left;padding:12px 14px;border-radius:10px;cursor:pointer}
+    .nav button:hover,.nav button.active{background:#1d2939;color:#fff}
+    .side-note{position:absolute;left:16px;right:16px;bottom:22px;padding:14px;background:#172033;border:1px solid #263247;border-radius:12px;font-size:12px;color:#b8c2d1}
+    main{margin-left:245px;width:calc(100% - 245px);padding:28px;max-width:1500px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
+    .topbar h1{font-size:28px}
+    .topbar p{color:#667085;font-size:14px}
+    .profile{display:flex;align-items:center;gap:10px}
+    .avatar{width:40px;height:40px;border-radius:50%;background:#dbe6ff;color:#315bd6;display:grid;place-items:center;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+    .card{background:#fff;border:1px solid #e7eaf0;border-radius:16px;padding:20px;box-shadow:0 5px 18px rgba(16,24,40,.04)}
+    .stat-label{font-size:13px;color:#667085}.stat{font-size:28px;font-weight:800;margin-top:5px}.stat small{font-size:12px;font-weight:500;color:#12a150}
+    .layout{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+    .card h2{font-size:18px;margin-bottom:14px}
+    .progress-wrap{display:flex;align-items:center;gap:18px}
+    .progress{height:10px;background:#edf0f5;border-radius:20px;overflow:hidden;flex:1}
+    .progress span{display:block;height:100%;width:72%;background:#4f7cff;border-radius:20px}
+    .percent{font-weight:800;color:#315bd6}
+    .task{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #eef0f4}
+    .task:last-child{border-bottom:0}
+    .check{width:20px;height:20px;accent-color:#4f7cff}
+    .task.done label{text-decoration:line-through;color:#98a2b3}
+    .tag{margin-left:auto;font-size:11px;padding:5px 8px;border-radius:20px;background:#eef4ff;color:#315bd6}
+    .chat{height:420px;display:flex;flex-direction:column}
+    .messages{flex:1;overflow:auto;padding:5px 2px}
+    .msg{max-width:82%;padding:10px 12px;border-radius:12px;margin-bottom:10px;font-size:13px}
+    .bot{background:#f0f4ff}.user{background:#4f7cff;color:#fff;margin-left:auto}
+    .chat-form{display:flex;gap:8px;margin-top:12px}
+    .chat-form input{flex:1;border:1px solid #d9dee8;border-radius:10px;padding:11px 12px;outline:none}
+    .btn{border:0;border-radius:10px;padding:10px 15px;background:#4f7cff;color:#fff;cursor:pointer;font-weight:700}
+    .btn.secondary{background:#eef2f7;color:#344054}
+    .subjects{display:grid;gap:12px}
+    .subject{display:flex;justify-content:space-between;align-items:center}
+    .subject-info{display:flex;align-items:center;gap:10px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#4f7cff}
+    .mini-progress{width:120px;height:7px;background:#edf0f5;border-radius:20px;overflow:hidden}
+    .mini-progress span{display:block;height:100%;background:#4f7cff}
+    .section{display:none}.section.active{display:block}
+    .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .tool{cursor:pointer;transition:.2s}.tool:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(16,24,40,.08)}
+    .tool-icon{font-size:28px;margin-bottom:10px}
+    textarea{width:100%;min-height:190px;border:1px solid #d9dee8;border-radius:10px;padding:12px;resize:vertical}
+    .quiz-q{font-weight:700;margin-bottom:12px}.option{display:block;padding:10px;border:1px solid #e1e5ec;border-radius:9px;margin:8px 0;cursor:pointer}.option:hover{background:#f7f9fc}
+    .empty{color:#667085;font-size:14px;padding:15px 0}
+    @media(max-width:950px){.sidebar{width:72px}.brand span,.nav button span,.side-note{display:none}main{margin-left:72px;width:calc(100% - 72px)}.grid{grid-template-columns:repeat(2,1fr)}.layout,.tools{grid-template-columns:1fr}}
+    @media(max-width:600px){main{padding:16px}.topbar h1{font-size:22px}.grid{grid-template-columns:1fr}.sidebar{padding:18px 9px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">🤖</div><span>StudyBuddy</span></div>
+    <div class="nav">
+      <button class="active" onclick="showSection('dashboard',this)">🏠 <span>Dashboard</span></button>
+      <button onclick="showSection('planner',this)">📅 <span>Study Planner</span></button>
+      <button onclick="showSection('quiz',this)">🧠 <span>Quick Quiz</span></button>
+      <button onclick="showSection('notes',this)">📝 <span>Smart Notes</span></button>
+      <button onclick="showSection('assistant',this)">💬 <span>AI Assistant</span></button>
+    </div>
+    <div class="side-note">AI StudyBuddy helps students organize study tasks, review subjects, create notes and practice with quick quizzes.</div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div><h1 id="pageTitle">Good morning 👋</h1><p>Your personalized learning dashboard</p></div>
+      <div class="profile"><span>Student</span><div class="avatar">S</div></div>
+    </div>
+
+    <section id="dashboard" class="section active">
+      <div class="grid">
+        <div class="card"><div class="stat-label">Study Streak</div><div class="stat">7 <small>days ↑</small></div></div>
+        <div class="card"><div class="stat-label">Completed Tasks</div><div class="stat" id="completedCount">8</div></div>
+        <div class="card"><div class="stat-label">Study Hours</div><div class="stat">24.5 <small>this week</small></div></div>
+        <div class="card"><div class="stat-label">Quiz Score</div><div class="stat">82% <small>+6%</small></div></div>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <h2>Today's Progress</h2>
+          <div class="progress-wrap"><div class="progress"><span id="mainProgress"></span></div><div class="percent" id="progressText">72%</div></div>
+          <div style="margin-top:18px">
+            <div class="task"><input class="check" type="checkbox" checked onchange="updateProgress()"><label>Review HTML & CSS concepts</label><span class="tag">Done</span></div>
+            <div class="task"><input class="check" type="checkbox" checked onchange="updateProgress()"><label>Practice JavaScript arrays</label><span class="tag">Done</span></div>
+            <div class="task"><input class="check" type="checkbox" onchange="updateProgress()"><label>Complete AI fundamentals notes</label><span class="tag">Today</span></div>
+            <div class="task"><input class="check" type="checkbox" onchange="updateProgress()"><label>Take 10-question quiz</label><span class="tag">Today</span></div>
+          </div>
+        </div>
+
+        <div class="card chat">
+          <h2>AI Study Assistant</h2>
+          <div class="messages" id="dashMessages">
+            <div class="msg bot">Hi! I'm StudyBuddy 🤖 Ask me about HTML, CSS, JavaScript, Python or study planning.</div>
+          </div>
+          <form class="chat-form" onsubmit="askAI(event,'dashMessages','dashInput')">
+            <input id="dashInput" placeholder="Ask a study question..." autocomplete="off">
+            <button class="btn">Send</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="planner" class="section">
+      <div class="card">
+        <h2>📅 Study Planner</h2>
+        <p style="color:#667085;margin-bottom:14px">Add tasks and manage your study schedule.</p>
+        <form class="chat-form" onsubmit="addTask(event)">
+          <input id="taskInput" placeholder="e.g. Study Python functions" required>
+          <button class="btn">Add Task</button>
+        </form>
+        <div id="taskList" style="margin-top:14px"></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="section">
+      <div class="card">
+        <h2>🧠 Quick Quiz</h2>
+        <p style="color:#667085;margin-bottom:16px">Test your web development basics.</p>
+        <div class="quiz-q">1. Which language is used to structure a web page?</div>
+        <label class="option"><input type="radio" name="q1" value="HTML"> HTML</label>
+        <label class="option"><input type="radio" name="q1" value="CSS"> CSS</label>
+        <label class="option"><input type="radio" name="q1" value="Python"> Python</label>
+        <div class="quiz-q" style="margin-top:20px">2. Which language is mainly used to add interactivity to webpages?</div>
+        <label class="option"><input type="radio" name="q2" value="JavaScript"> JavaScript</label>
+        <label class="option"><input type="radio" name="q2" value="HTML"> HTML</label>
+        <label class="option"><input type="radio" name="q2" value="CSS"> CSS</label>
+        <button class="btn" style="margin-top:15px" onclick="checkQuiz()">Submit Quiz</button>
+        <p id="quizResult" style="margin-top:12px;font-weight:700"></p>
+      </div>
+    </section>
+
+    <section id="notes" class="section">
+      <div class="card">
+        <h2>📝 Smart Notes</h2>
+        <p style="color:#667085;margin-bottom:12px">Write, save and review your study notes.</p>
+        <textarea id="notesArea" placeholder="Type your notes here..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="saveNotes()">Save Notes</button><button class="btn secondary" onclick="clearNotes()">Clear</button></div>
+        <p id="noteStatus" style="margin-top:10px;color:#12a150;font-size:13px"></p>
+      </div>
+    </section>
+
+    <section id="assistant" class="section">
+      <div class="card chat" style="height:520px">
+        <h2>💬 AI Study Assistant</h2>
+        <div class="messages" id="assistantMessages">
+          <div class="msg bot">Welcome to AI StudyBuddy! Ask a question or type “plan my study”.</div>
+        </div>
+        <form class="chat-form" onsubmit="askAI(event,'assistantMessages','assistantInput')">
+          <input id="assistantInput" placeholder="Ask anything about your studies..." autocomplete="off">
+          <button class="btn">Send</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="tools" class="section">
+      <div class="tools">
+        <div class="card tool"><div class="tool-icon">📚</div><h2>Subject Review</h2><p class="empty">Review your subjects and track progress.</p></div>
+        <div class="card tool"><div class="tool-icon">⏱️</div><h2>Focus Timer</h2><p class="empty">Use 25-minute focus sessions for productive study.</p></div>
+        <div class="card tool"><div class="tool-icon">🎯</div><h2>Learning Goals</h2><p class="empty">Set clear weekly learning targets.</p></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const replies = [
+    "Try breaking the topic into small concepts and practice each one with an example.",
+    "For better retention, use active recall: close your notes and explain the concept in your own words.",
+    "A good study session can be 25 minutes of focused work followed by a 5-minute break.",
+    "I can help you make a study plan, revise concepts, or generate practice questions."
+  ];
+
+  function showSection(id, btn){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    const titles={dashboard:'Good morning 👋',planner:'Study Planner',quiz:'Quick Quiz',notes:'Smart Notes',assistant:'AI Study Assistant'};
+    document.getElementById('pageTitle').textContent=titles[id]||'AI StudyBuddy';
+  }
+
+  function askAI(e, boxId, inputId){
+    e.preventDefault();
+    const input=document.getElementById(inputId), text=input.value.trim();
+    if(!text)return;
+    const box=document.getElementById(boxId);
+    box.innerHTML += `<div class="msg user">${escapeHtml(text)}</div>`;
+    let answer;
+    const q=text.toLowerCase();
+    if(q.includes('plan')) answer="Sure! Try: 25 min JavaScript → 5 min break → 25 min Python → 10 min quiz review.";
+    else if(q.includes('html')) answer="HTML creates the structure of a webpage using elements such as headings, paragraphs, links and forms.";
+    else if(q.includes('css')) answer="CSS controls the presentation of a webpage, including layout, spacing, colors, fonts and responsive design.";
+    else if(q.includes('javascript')) answer="JavaScript adds logic and interactivity to webpages. Practice variables, functions, arrays and DOM manipulation.";
+    else answer=replies[Math.floor(Math.random()*replies.length)];
+    setTimeout(()=>{box.innerHTML += `<div class="msg bot">${answer}</div>`;box.scrollTop=box.scrollHeight;},250);
+    input.value='';
+  }
+
+  function updateProgress(){
+    const checks=[...document.querySelectorAll('#dashboard .check')];
+    const done=checks.filter(c=>c.checked).length;
+    const pct=Math.round(done/checks.length*100);
+    document.getElementById('mainProgress').style.width=pct+'%';
+    document.getElementById('progressText').textContent=pct+'%';
+    document.getElementById('completedCount').textContent=8+done;
+    document.querySelectorAll('#dashboard .task').forEach(t=>t.classList.toggle('done',t.querySelector('input').checked));
+  }
+
+  function addTask(e){
+    e.preventDefault();
+    const input=document.getElementById('taskInput'), value=input.value.trim();
+    if(!value)return;
+    const list=document.getElementById('taskList');
+    const row=document.createElement('div'); row.className='task';
+    row.innerHTML=`<input class="check" type="checkbox" onchange="this.parentElement.classList.toggle('done',this.checked)"><label>${escapeHtml(value)}</label><span class="tag">New</span>`;
+    list.appendChild(row); input.value='';
+  }
+
+  function checkQuiz(){
+    let score=0;
+    if(document.querySelector('input[name="q1"]:checked')?.value==='HTML')score++;
+    if(document.querySelector('input[name="q2"]:checked')?.value==='JavaScript')score++;
+    document.getElementById('quizResult').textContent=`Your score: ${score}/2 — ${score===2?'Excellent! 🎉':'Keep practicing and try again! 💪'}`;
+  }
+
+  function saveNotes(){
+    localStorage.setItem('studyBuddyNotes',document.getElementById('notesArea').value);
+    document.getElementById('noteStatus').textContent='Notes saved successfully ✓';
+  }
+  function clearNotes(){
+    document.getElementById('notesArea').value='';
+    localStorage.removeItem('studyBuddyNotes');
+    document.getElementById('noteStatus').textContent='Notes cleared.';
+  }
+  function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+  document.getElementById('notesArea').value=localStorage.getItem('studyBuddyNotes')||'';
+  updateProgress();
+</script>
+</body>
+</html>

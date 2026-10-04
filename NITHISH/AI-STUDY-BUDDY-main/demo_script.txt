@@ -1,0 +1,34 @@
+AI STUDYBUDDY — TEAM 3 DEMO SCRIPT
+
+1. Open the application and introduce the project:
+   "This is AI StudyBuddy, a student learning assistant."
+
+2. Dashboard:
+   Show study streak, completed tasks, study hours and quiz score.
+   Explain that the dashboard gives students a quick view of their study progress.
+
+3. Study Planner:
+   Add a task such as "Study Python Functions".
+   Mark the task as completed.
+
+4. Quick Quiz:
+   Answer the HTML and JavaScript questions and submit the quiz.
+   Show the score.
+
+5. Smart Notes:
+   Type a short study note and click Save Notes.
+   Explain that notes are stored in browser LocalStorage.
+
+6. AI Assistant:
+   Ask:
+   - "Explain HTML"
+   - "Explain JavaScript"
+   - "Plan my study"
+   Show the generated demo response.
+
+7. Team & Project:
+   Show Team 3 members and the project modules.
+
+8. Closing:
+   "AI StudyBuddy combines study planning, progress tracking, quizzes, notes and study
+   assistance in one responsive application."
